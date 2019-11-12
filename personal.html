@@ -1,0 +1,419 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Управление Торговыми представителями</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<style>
+			/* Style the form */
+			#regForm {
+			  background-color: #fff;
+			  margin: 100px auto;
+			  padding: 40px;
+			  width: 70%;
+			  min-width: 300px;
+			  color: black;
+			  border-top: 10px solid red;
+			  min-width:800px;
+			}
+			body
+			{
+				background-color: lightgray;
+				background-size: contain;
+				background-position: bottom center;
+				background-repeat: no-repeat;
+				font-family: Arial;
+				color: black;
+			}
+			/* Style the input fields */
+			input {
+			  padding: 10px;
+			  width: 100%;
+			  font-size: 17px;
+			  font-family: Raleway;
+			  border: 1px solid #aaaaaa;
+			  border-radius: 10px;
+			}
+			
+			input[type='radio'] {
+				margin:5px;
+			}
+			
+			.tab {border-bottom: 1px solid black; padding-bottom: 10px;}
+			.tab:last-of-type td:not(:first-of-type) {min-width: 100px; width: 20%; text-align:center;}
+			.tab:last-of-type tr:nth-of-type(2) td {text-align: center;}
+			.tab:last-of-type td:first-of-type {min-width: 100px; width: 60%;}
+			.tab:last-of-type tr td:nth-of-type(3) input {margin-left: 10px;}
+			.tab:nth-of-type(3) td:first-of-type {min-width: 200px; text-align: left;}
+			.tab:nth-of-type(3) td {text-align: center;}
+			
+			button {
+				margin-top: 20px;
+				width: 100%;
+				height: 40px;
+				border: none;
+				border-radius: 15px;
+			}
+			
+			button[onclick='newDot()'] {background:red; font-size: 1.3em; color: white;}
+			#mainbutton {position: fixed; top:0; margin: 1%; width: 13%; vertical-align: center; height: 10%;}
+			#total {text-align: center; font-weight: bold;}
+			#tables tr:first-of-type {font-weight: bold; }
+			#tables td {padding: 10px; font-size: 1.2em; width: 25%; text-align: center;}
+			#tables input {height: 35px;}
+			label, textarea {width:100%;}
+			#textarea {border-top: 1px solid gray; padding-top: 10px; padding-bottom: 20px;}
+			#saleRepresantatives {width: 100%; border-bottom: 1px solid black; margin-bottom: 20px;}
+			#saleRepresantatives td {width: 20%;}
+			#saleRepresantatives select {width:100%; font-size: 1.3em; margin-bottom: 5px;} 
+			
+			.sub td {border: none;}
+			.sub tr:first-of-type td {border-bottom: 1px solid gray;}
+			.sub td:last-of-type {border-left:1px solid red;}
+			.sub tr:nth-of-type(11) td,.sub tr:nth-of-type(12) td,.sub tr:nth-of-type(13) td {border:none}
+			.sub tr:nth-of-type(11) {border-bottom: 1px solid gray;}
+			
+			table {
+				width:100%;
+			}
+			table td {padding: 5px; font-weight: bold; border: 1px solid gray; text-align:center;}
+			table td:first-of-type {width:20%;}
+						
+			@media (orientation: portrait) {
+				#regForm {width: 80%; font-size: 15pt;}
+				#saleRepresantatives {font-size: 15pt;}
+				#regForm input {height: 5%; font-size: 15pt;}
+				#regForm button {height: 5%; width: 100%; font-size: 30pt;}
+				#chooseDot {font-size: 24pt;}
+				#mainbutton {font-size: 2em; padding: 0%; height: 6%!important;;} 
+			}
+		</style>
+	</head>
+	<body>
+	
+		<a href='saleMan.html'>
+			<button type="button" id='mainbutton' class="btn btn-danger btn-lg btn-block">
+				Назад
+			</button>
+		</a>
+		
+		<div id="regForm" >
+
+			<table id="saleRepresantatives" class="tab">
+				<tr>
+					<td>
+						<h4>Торговый Представитель:</h4>
+					</td>
+					<td colspan='4'>
+						<select onchange='getContact(this.value);'>
+						</select>
+					</td>
+				</tr>
+			</table>
+
+			<form class="tab"><h3>Информация о Торговом Представителе:</h3>
+			  <p><input placeholder="Имя..." oninput="this.className = ''"></p>
+			  <p><input placeholder="Фамилия..." oninput="this.className = ''"></p>
+			  <p><input placeholder="Телефон..." oninput="this.className = ''"></p>
+			  <p><input placeholder="E-mail..." oninput="this.className = ''"></p>
+			  
+				<table>
+					<tr>
+						<td>
+							Товар
+						</td>
+						<td>
+							Личный склад
+						</td>
+					</tr>
+					<tr>
+						<td>CORVUS STRONG</td>
+						<td class='pW'></td>
+					</tr>
+					<tr>
+						<td>CORVUS EXTREME</td>
+						<td class='pW'></td>
+					</tr>
+					<tr>
+						<td>CORVUS BRUTAl</td>
+						<td class='pW'></td>
+					</tr>
+					<tr>
+						<td>CORVUS HULK</td>
+						<td class='pW'></td>
+					</tr>
+					<tr>
+						<td>CORVUS FLASH</td>
+						<td class='pW'></td>
+					</tr>
+					<tr>
+						<td>CORVUS JOKER</td>
+						<td class='pW'></td>
+					</tr>
+					<tr>
+						<td>CORVUS LOGAN</td>
+						<td class='pW'></td>
+					</tr>
+					<tr>
+						<td>CNH ORIGINAL</td>
+						<td class='pW'></td>
+					</tr>
+					<tr>
+						<td>CNH STRONG</td>
+						<td class='pW'></td>
+					</tr>
+				</table>
+			  
+			  <button type='button' onclick='updateContact()'>Изменить</button>
+			</form>
+
+			<form class="tab sub"><h2>Выдача товара:</h2>
+			  <table>
+				<tr>
+					<td>Сумма (руб)</td>
+					<td>Долг (руб)</td>
+				</tr>
+				<tr>
+					<td>
+						<input id='money'>
+					</td>
+					<td id='debt'></td>
+				</tr>
+				
+			  </table>
+			  <button type='button' onclick='addDeal()'>Отправить</button>
+			</form>
+
+		</div>
+		<script src='js/cookie.js'></script>
+		<script>
+			var today = new Date();
+			var year = today.getFullYear();
+			var month = today.getMonth();
+			var date = today.getDate();
+			var List = [];
+			var x = document.getElementsByClassName("tab");
+			var d = new Date();
+			var currentID = userID;
+			var saleRep = document.getElementById('saleRepresantatives');
+			var saleChoice = saleRep.getElementsByTagName('select');
+			var url = 'https://ac-amo.ru/corvusform/goodEx.html';
+			var priceList = [180,180,180,200,200,200,200,220,220]; 
+			var quantityList = [0,0,0,0,0,0,0,0,0]; 
+			z = x[1].getElementsByTagName("input");
+			w = x[2].getElementsByTagName('input');
+			y = x[1].getElementsByClassName('pW');
+			f = x[2].getElementsByTagName('td');
+			var IDcontact;
+			var start; 
+			var end; 
+			var dealName;
+			var ident;
+			var income = 0;
+			var paddatepart = function(part) {
+				 return part >= 10 ? part.toString() : '0' + part.toString();
+			};
+
+			var date2str = function(d) {
+				 return d.getFullYear() + '-' + paddatepart(1 + d.getMonth()) + '-' + paddatepart(d.getDate()) + 'T' + paddatepart(d.getHours()) + ':' + paddatepart(d.getMinutes()) + ':' + paddatepart(d.getSeconds()) + '+03:00';
+			};
+
+			function accessInfo() {
+				switch(access) {
+					case '0':
+						mng = '76';
+						saleRep.style.display = 'none';
+						dealList(userID);
+						break;
+					case '1':
+						mng = '77';
+						getDepartment(depID);
+						break; 
+				}
+			}
+			
+			function chooseContact(id,deal=0) {
+				start = new Date();
+				start = date2str(start);
+				id = parseInt(id,10);
+				ident = id; 
+				console.log(List);
+				dotContact = List[id].ID;
+				console.log(z[0].value);
+				z[0].value = List[id].NAME;
+				z[1].value = List[id].LAST_NAME;
+				z[2].value = List[id].UF_CRM_1573312161072;
+				z[3].value = List[id].UF_CRM_1573312294114;
+				
+				y[0].innerHTML = List[id].UF_CRM_1573311099815;
+				y[1].innerHTML = List[id].UF_CRM_1573311046657;
+				y[2].innerHTML = List[id].UF_CRM_1573311030935;
+				y[3].innerHTML = List[id].UF_CRM_1573311062519;
+				y[4].innerHTML = List[id].UF_CRM_1573311052711;
+				y[5].innerHTML = List[id].UF_CRM_1573311074464;
+				y[6].innerHTML = List[id].UF_CRM_1573311086798;
+				y[7].innerHTML = List[id].UF_CRM_1573310996682;
+				y[8].innerHTML = List[id].UF_CRM_1573311018736;
+				
+				f[3].innerHTML = List[id].UF_CRM_1573311512826;
+				debt = parseInt(List[id].UF_CRM_1573311512826);
+				
+				dealName = 'Выдача товара '+List[id].LAST_NAME+' '+List[id].NAME;
+				IDcontact = parseInt(List[id].ID); 
+			}
+			
+			function updateContact() {
+				fetch('https://crm.corvus.ru/rest/47/7i7psg9pzq0nvc4p/crm.contact.update/', {
+					method: 'POST',
+					headers: {
+					'Content-Type': 'application/json;charset=utf-8'
+					},
+					body: JSON.stringify({
+						'ID':IDcontact,
+						'FIELDS':{
+							'NAME':y[0].value,
+							'LAST_NAME':y[1].value,
+							'UF_CRM_1573312161072':y[2].value,
+							'UF_CRM_1573312294114':y[3].value
+						}
+					})
+				}).then((response) => {
+					console.log(response);
+					response.json().then((data) => {
+						alert("Данные Торгового Представителя обновлены!");
+					});
+				});
+			}
+			
+			function pastCont() {
+				fetch('https://crm.corvus.ru/rest/47/7i7psg9pzq0nvc4p/crm.contact.update/', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json;charset=utf-8'
+					},
+					body: JSON.stringify({
+						'ID':IDcontact,
+						'FIELDS':{
+							'UF_CRM_1573311512826':(debt-income)
+						}
+					})
+				}).then((response) => {
+					console.log(response);
+					response.json().then((data) => {
+						console.log(debt-income);
+						window.location.reload();
+					});
+				});
+			}
+			
+			function addDeal() {
+				if (confirm('Вы уверены, что хотите выдать товар?')) {
+					end = new Date(); 
+					end = date2str(end);
+					income = parseInt(w[0].value);
+					fetch('https://crm.corvus.ru/rest/47/7i7psg9pzq0nvc4p/crm.deal.add/', {
+						method: 'POST',
+						headers: {
+						'Content-Type': 'application/json;charset=utf-8'
+						},
+						body: JSON.stringify({
+						'FIELDS':{
+							'UF_CRM_1571203066750':start,
+							'UF_CRM_1571203087218':end,
+							'CATEGORY_ID':2,
+							'TITLE':dealName,
+							'UF_CRM_1573308832404':107,
+							'CONTACT_ID':IDcontact,
+							'STAGE_ID':"C2:WON",
+							'ASSIGNED_BY_ID':userID,
+							'OPPORTUNITY':income
+						},
+						'PARAMS':{
+							"REGISTER_SONET_EVENT": "Y"
+						}
+						})}).then((response) => {
+						console.log(response);
+						response.json().then((data) => {
+							console.log(data.result);
+							pastCont();
+						});
+					});
+				}
+			}
+						
+			function getDepartment(id) {
+				var zet = '';
+				fetch('https://crm.corvus.ru/rest/47/wkn05dy055849bbq/crm.contact.list/', {
+					method: 'POST',
+					headers: {
+					'Content-Type': 'application/json;charset=utf-8'
+					},
+					body: JSON.stringify({
+						filter: {
+						"UF_CRM_1573376299":id
+						},
+						select: [
+							'NAME',
+							'LAST_NAME',
+							'UF_CRM_1573312161072',
+							'UF_CRM_1573312294114',
+							'UF_CRM_1573311099815',
+							'UF_CRM_1573311046657',
+							'UF_CRM_1573311030935',
+							'UF_CRM_1573311062519',
+							'UF_CRM_1573311052711',
+							'UF_CRM_1573311074464',
+							'UF_CRM_1573311086798',
+							'UF_CRM_1573310996682',
+							'UF_CRM_1573311018736',
+							'UF_CRM_1573297783135',
+							'UF_CRM_1573311512826'
+						]
+					})
+				}).then((response) => {
+					console.log(response);
+					response.json().then((data) => {
+						for (var i = 0; i < data.result.length; i++) {
+							console.log(data.result[i].ID);
+							zet += '<option value="'+i+'">'+data.result[i].NAME+'\u0020'+data.result[i].LAST_NAME+'</option>'
+							List.push(data.result[i]);
+						}
+						saleChoice[0].innerHTML = zet;
+						currentID = data.result[0].ID;
+						chooseContact(0);
+					});
+				});
+			}
+			
+			function calculate(className, count, num) {
+				y = x[2].getElementsByTagName('tr');
+				l = y[10].getElementsByTagName('td');
+				z = y[num].getElementsByTagName('td');
+				g = 0;
+				switch(className) {
+					case 'price':
+						priceList[num-1] = count; 
+						break;
+					case 'quantity':
+						quantityList[num-1] = count; 
+						break;
+				}
+				z[5].innerHTML = (priceList[num-1]*quantityList[num-1]); 
+				for (var i = 0; i < priceList.length; i++) {
+					g += priceList[i]*quantityList[i]; 
+				}
+				l[1].innerHTML = g;
+			}
+			
+			function checkGoods(num,y) {
+				if (y[num+1].value != "") {
+					console.log(y[num].value);
+					return parseInt(y[num].value);
+				} else {
+					return ''; 
+				}
+			}
+			
+			getDepartment(userID);
+		</script>
+	</body>
+</html>

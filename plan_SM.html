@@ -1,0 +1,154 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Планирование маршрутов</title>
+		<style>
+			body {font-size: 1.3em;}
+			#saleDots td, #saleDots tr {padding: 15px; text-align: left;}
+			#saleDots {border-collapse: collapse; width: 90%; margin: auto; font-size: 1em;}
+			#saleDots td {border:1px solid gray; font-weight: bold;}
+			#saleDots tr:first-of-type td {width:12.5%}
+			#saleDots tr:first-of-type td:first-of-type {width:25%;}
+			form {padding-top:8%;}
+			
+			#count {
+				background: yellow;
+			}
+			#count td:first-of-type:not {
+				text-align: center;
+			}
+			#countContainer {position: fixed; width: 89%; margin-left:5%; margin-top:4%; font-size: 1em; border-collapse: collapse; font-weight: bold;}
+			#count td {width:12.5%; padding: 15px; text-align: center;}
+			#count td:first-of-type {width:25%; }
+			
+			#mainbutton {margin-left: 5%; position: fixed; top:0; width: 89%; height: 8%; margin-top:0; border-radius:0!important; background-color: red; border: none; color: white; font-weight:bold;}
+		</style>
+	</head>
+	<body>
+		<a href='saleMan.html'>
+			<button type="button" id='mainbutton' class="btn btn-danger btn-lg btn-block"'>
+				Назад
+			</button>
+		</a>
+	
+		<table id='countContainer'>
+			<tr id='count'>
+				<td>Количество визитов: </td>
+				<td class="wDay"></td>
+				<td class="wDay"></td>
+				<td class="wDay"></td>
+				<td class="wDay"></td>
+				<td class="wDay"></td>
+			</tr>
+		</table>
+	
+		<form>
+			<table id='saleDots'>
+				<tr>
+					<td>Точка</td>
+					<td>Понедельник</td>
+					<td>Вторник</td>
+					<td>Среда</td>
+					<td>Четверг</td>
+					<td>Пятница</td>
+				</tr>
+			</table>
+		</form>
+		
+		<script src='js/cookie.js'></script>
+		<script src='js/count.js'></script>
+		<script>
+			var today = new Date();
+
+			var year = today.getFullYear();
+			var month = today.getMonth();
+			var date = today.getDate();
+			
+			var dateWeek = [31,32,33,34,35];
+			
+			var paddatepart = function(part)
+			{
+				 return part >= 10 ? part.toString() : '0' + part.toString();
+			};
+			var date2str = function(d) 
+			{
+				 return d.getFullYear() + '-' + paddatepart(1 + d.getMonth()) + '-' + paddatepart(d.getDate()) + 'T' + paddatepart(d.getHours()) + ':' + paddatepart(d.getMinutes()) + ':' + paddatepart(d.getSeconds()) + '+03:00';
+			};
+			
+			var List = [];
+			
+			function companyList(start,salesmanID) {
+				fetch('https://crm.corvus.ru/rest/47/vinhe86n0fyt25r6/crm.company.list/', {
+					method: 'POST',
+					headers: {
+					'Content-Type': 'application/json;charset=utf-8'
+					},
+					body: JSON.stringify({
+						order: { "DATE_CREATE": "ASC" }, 
+						filter: { "ASSIGNED_BY_ID": parseInt(salesmanID)}, 
+						select: [
+							"ID",
+							"TITLE",
+							"UF_CRM_1568393832461",
+							"UF_CRM_1570782547322",
+							"UF_CRM_1568393845922",
+							'UF_CRM_1570724904543'
+						],
+						start: start
+					})
+				}).then((response) => {
+					console.log(response);
+					response.json().then((data) => {
+						console.log(data.next);
+						for (var i = 0; i < data.result.length; i++) {
+							List.push(data.result[i]); 
+						}
+						if (data.next % 50 == 0 && data.next != 0) {
+							companyList(data.next,userID); 
+						} else {
+							showCompanyList();
+						}
+					});
+				});
+			}
+			
+			function showCompanyList() {
+				var color = ['','','','',''];
+				var saleDots = document.getElementById('saleDots');
+				var z = ''; 
+				for (var i = 0; i < List.length; i++ ) {
+					z += '<tr id="'+List[i].ID+'"><td>'+List[i].TITLE+'<br>'+List[i].UF_CRM_1570782547322+'</td>';
+					console.log(List[i].UF_CRM_1570724904543);
+					for (var u = 0; u < 5; u++) {
+						switch(List[i].UF_CRM_1570724904543[u]) {
+							case 31:
+								color[0] = 'style="background-color:red"';
+								break;
+							case 32:
+								color[1] = 'style="background-color:red"';
+								break;
+							case 33: 
+								color[2] = 'style="background-color:red"';
+								break;
+							case 34: 
+								color[3] = 'style="background-color:red"';
+								break;
+							case 35:
+								color[4] = 'style="background-color:red"';
+								break;
+							default:
+								break;
+						}
+						z += '<td '+color[u]+' data-day="'+u+'" class="company '+List[i].ID+' '+u+'"></td>';
+					}
+					z += '</tr>';
+					var color = ['','','','',''];
+				}
+				saleDots.innerHTML += z;
+				count('SM');
+			}
+			
+			companyList(0,userID);
+		</script>
+	</body>
+</html>

@@ -1,0 +1,424 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Планирование маршрутов</title>
+		<style>
+			form {padding-top:8%;}
+			#saleDots td, #saleDots tr {padding: 15px; text-align: left;}
+			#saleDots {border-collapse: collapse; width: 90%; margin: auto; font-size: 1.5em;}
+			#saleDots td {border:1px solid gray; font-weight: bold;}
+			input[type='checkbox'] {
+				-webkit-appearance:none;
+				width:50px;
+				height:50px;
+				background:white;
+				border-radius:5px;
+				border:2px solid #555;
+				margin-left: 35%;
+				border-radius:0;
+			}
+			input[type='checkbox']:checked {
+				background: red;
+			}
+			button {
+				margin-top: 20px;
+				width: 100%;
+				height: 60px;
+				border: none;
+				border-radius: 15px;
+				background-color: red;
+				color: white;
+				font-weight: bold;
+				font-size: 2em;
+			}
+			#count {
+				background: yellow;
+			}
+			#count td:first-of-type:not {
+				text-align: center;
+			}
+			#saleDots tr:first-of-type select {
+				font-size: 1.3em;
+				width: 100%;
+			}
+			#saleDots tr:first-of-type td {width:12.5%}
+			#saleDots tr:first-of-type td:first-of-type {width:25%;}
+			
+			#countContainer {position: fixed; width: 89%; margin-left:5%; margin-top:4%; font-size: 1.5em; border-collapse: collapse; font-weight: bold;}
+			#count td {width:12.5%; padding: 15px; text-align: center;}
+			#count td:first-of-type {width:25%; }
+			
+			@media (orientation: portrait) { 
+				form {padding-top: 20%; }
+				#saleDots {width:100%;}
+				#countContainer {margin-top:9%; width:100%; margin-left:-1%;}
+				button {width:100%;}
+			}
+			
+			#mainbutton {margin-left: 5%; position: fixed; top:0; width: 89%; height: 8%; margin-top:0; border-radius:0!important; background-color: red; border: none; color: white; font-weight:bold;}
+		</style>
+	</head>
+	<body>
+		<a href='saleMan.html'>
+			<button type="button" id='mainbutton' class="btn btn-danger btn-lg btn-block">
+				Назад
+			</button>
+		</a>
+	
+		<table id='countContainer'>
+			<tr id='count'>
+				<td>Количество визитов: </td>
+				<td class="wDay"></td>
+				<td class="wDay"></td>
+				<td class="wDay"></td>
+				<td class="wDay"></td>
+				<td class="wDay"></td>
+			</tr>
+		</table>
+		
+		<form>
+			<table id='saleDots'>
+				<tr>
+					<td>
+						Торговый Представитель:
+					</td>
+					<td colspan='5'>
+						<select onchange='companyList(0,this.value,t=1)'></select>
+					</td>
+				</tr>
+				<tr>
+					<td>Точка</td>
+					<td>Понедельник</td>
+					<td>Вторник</td>
+					<td>Среда</td>
+					<td>Четверг</td>
+					<td>Пятница</td>
+				</tr>
+			</table>
+			<button type='button' onclick='makePlan()'>Подтвердить</button>
+		</form>
+		
+		<script src='js/cookie.js'></script>
+		<script src='js/count.js'></script>
+		<script>
+			var saleDots = document.getElementById('saleDots');
+			var saleRep = saleDots.getElementsByTagName('select');
+			var lastTR = saleDots.querySelectorAll('#saleDots tr:nth-of-type(1) ~ tr');
+			var today = new Date();
+			var dateWeek = [31,32,33,34,35];
+			var year = today.getFullYear();
+			var month = today.getMonth();
+			var date = today.getDate();
+			var List = [];
+			var depList = [];
+			var zet = '';
+			var currentID = 0;
+			var paddatepart = function(part)
+			{
+				 return part >= 10 ? part.toString() : '0' + part.toString();
+			};
+			var date2str = function(d) 
+			{
+				 return d.getFullYear() + '-' + paddatepart(1 + d.getMonth()) + '-' + paddatepart(d.getDate()) + 'T' + paddatepart(d.getHours()) + ':' + paddatepart(d.getMinutes()) + ':' + paddatepart(d.getSeconds()) + '+03:00';
+			};
+			
+			function accessInfo() {
+				if (userID) {
+					if (access) {
+						switch(access) {
+							case '0':
+								document.body.style.display = 'none';
+								break;
+							case '1':
+								getDepartment(depID);
+								break;
+							case '2':
+								console.log(depID);
+								getDepList(depID);
+								break;
+						}
+					}
+				} else {
+					document.body.style.display = 'none';
+				}
+			}
+				
+			accessInfo();
+			
+			function companyList(start,salesmanID,t=0) {
+				if (t == 1) {
+					salesmanID = parseInt(salesmanID);
+				}
+				if (start == 0) {
+					List = [];
+					saleDots = document.getElementById('saleDots');
+				}
+				console.log(salesmanID);
+				fetch('https://crm.corvus.ru/rest/47/vinhe86n0fyt25r6/crm.company.list/', {
+					method: 'POST',
+					headers: {
+					'Content-Type': 'application/json;charset=utf-8'
+					},
+					body: JSON.stringify({
+						order: { "DATE_CREATE": "ASC" },  
+						filter: { "ASSIGNED_BY_ID": salesmanID }, 
+						select: [
+							"ID",
+							"TITLE",
+							"UF_CRM_1570782547322",
+							"UF_CRM_1570782508776",
+							"UF_CRM_1570724904543",
+							"ASSIGNED_BY_ID"
+						],
+						start: start
+					})
+				}).then((response) => {
+					console.log(response);
+					response.json().then((data) => {
+						console.log(data.result);
+						for (var i = 0; i < data.result.length; i++) {
+							List.push(data.result[i]); 
+							console.log(data.result.UF_CRM_1570724904543);
+						}
+						if (data.next % 50 == 0 && data.next != 0) {
+							companyList(data.next,salesmanID,t); 
+						} else {
+							a1 = 0; 
+							a2 = 0; 
+							a3 = 0; 
+							a4 = 0;
+							a5 = 0;
+							showCompanyList(t);
+						}
+					});
+				});
+			}
+			
+			function showCompanyList(t) {
+				var checkList = ['','','','',''];
+				var z = ''; 
+				for (var i = 0; i < List.length; i++ ) {
+					z += '<tr class="saleDots '+List[i].ASSIGNED_BY_ID+'" id="'+List[i].ID+'"><td>'+List[i].TITLE+'<br>'+List[i].UF_CRM_1570782547322+'</td>';
+					console.log(List[i].UF_CRM_1570724904543);
+					for (var u = 0; u < 5; u++) {
+						switch(List[i].UF_CRM_1570724904543[u]) {
+							case 31:
+								checkList[0] = 'checked';
+								break;
+							case 32:
+								checkList[1] = 'checked';
+								break;
+							case 33: 
+								checkList[2] = 'checked';
+								break;
+							case 34: 
+								checkList[3] = 'checked';
+								break;
+							case 35:
+								checkList[4] = 'checked';
+								break;
+							default:
+								break;
+						}
+						z += '<td><input '+checkList[u]+' onclick="countDots('+u+',this.checked)" data-day="'+u+'" data-com="'+List[i].ID+'" data-name="'+List[i].TITLE+'" data-city="'+List[i].UF_CRM_1570782508776+'" type="checkbox"></td>';
+					}
+					z += '</tr>';
+					checkList = ['','','','',''];
+				}
+				if (t == 1) {
+					[...document.getElementsByClassName(currentID)].map(n => n && n.remove());
+					currentID = List[1].ASSIGNED_BY_ID;
+					console.log(currentID);
+				}
+				saleDots.innerHTML += z;
+				saleRep[0].value = currentID;
+				
+				count('SP');
+				console.log(a1);
+			}
+
+			diff = function (f1, f2) {
+				return f1.filter(i=>!f2.includes(i))
+				.concat(f2.filter(i=>!f1.includes(i)))
+			}
+			
+			function makePlan() {
+				var x = saleDots.getElementsByTagName('tr');
+				var dateWeekNow = [];
+				for (var i = 0; i < x.length; i++) {
+					dateWeekNow = [];
+					console.log(x[i+1]);
+					var y = x[i+2].getElementsByTagName("input");
+					var companyID = parseInt(x[i+2].id);
+					for (var u = 0; u < y.length; u++) {
+						if (y[u].checked) {
+							dateWeekNow.push(dateWeek[u]);
+						}
+					}
+					console.log(y);
+					if (!List[i].UF_CRM_1570724904543) {
+						var lst = [];
+					} else {
+						var lst = List[i].UF_CRM_1570724904543;
+					}
+					var diffResult = diff(lst,dateWeekNow);
+					console.log(diffResult);
+					if (diffResult.length != 0) {
+						fetch('https://crm.corvus.ru/rest/47/vinhe86n0fyt25r6/crm.company.update/', {
+							method: 'POST',
+							headers: {
+							'Content-Type': 'application/json;charset=utf-8'
+							},
+							body: JSON.stringify({
+								'ID':companyID,
+								'fields':{
+									'UF_CRM_1570724904543':dateWeekNow
+								},
+								'params':{"REGISTER_SONET_EVENT": "Y"}})
+						}).then((response) => {
+							console.log(response);
+							response.json().then((data) => {
+								console.log(data.result);
+							});
+						});
+						dateWeekNow = [];
+					}
+				} 
+				alert('Спасибо, план составлен!');
+			}
+			
+			console.log(weekDays);
+			
+			function countDots(day, check) {
+				console.log(check);
+				switch(day) {
+					case 0:
+						if (check == true) {
+							a1 += 1; 
+						} else {
+							a1 -= 1; 
+						}
+						weekDays[0].innerHTML = a1; 
+						break;
+					case 1: 
+						if (check == true) {
+							a2 += 1; 
+						} else {
+							a2 -= 1; 
+						}
+						weekDays[1].innerHTML = a2;
+						break;
+					case 2: 
+						if (check == true) {
+							a3 += 1; 
+						} else {
+							a3 -= 1; 
+						}
+						weekDays[2].innerHTML = a3;
+						break;
+					case 3: 
+						if (check == true) {
+							a4 += 1; 
+						} else {
+							a4 -= 1; 
+						}
+						weekDays[3].innerHTML = a4;
+						break;
+					case 4:
+						if (check == true) {
+							a5 += 1; 
+						} else {
+							a5 -= 1; 
+						}
+						weekDays[4].innerHTML = a5;
+						break;
+					default:
+						break;
+				}
+			}
+			
+			function getDepList(id) {
+				var zet = ''; 
+				fetch('https://crm.corvus.ru/rest/47/wkn05dy055849bbq/department.get/', {
+					method: 'POST',
+					headers: {
+					'Content-Type': 'application/json;charset=utf-8'
+					},
+					body: JSON.stringify({
+						"PARENT":id
+					})
+				}).then((response) => {
+					console.log(response);
+					response.json().then((data) => {
+						console.log(data.result);
+						for (var i = 0; i < data.result.length; i++) {
+							getDepartment(data.result[i].ID,1); 
+							
+							fetch('https://crm.corvus.ru/rest/47/wkn05dy055849bbq/user.get/', {
+								method: 'POST',
+								headers: {
+								'Content-Type': 'application/json;charset=utf-8'
+								},
+								body: JSON.stringify({
+									"UF_DEPARTMENT":data.result[i].ID
+								})
+							}).then((response) => {
+								console.log(response);
+								response.json().then((data) => {
+									console.log(data.result);
+									for (var i = 0; i < data.result.length; i++) {
+										console.log(data.result[i]);
+										switch(data.result[i].WORK_POSITION) {
+											case "Супервайзер":
+												break;
+											default:
+												zet += '<option value="'+data.result[i].ID+'">'+decodeURIComponent(JSON.parse('"'+data.result[i].NAME+'\u0020'+data.result[i].LAST_NAME+'"'))+'</option>'
+												break;
+										}
+									}
+									console.log(zet);
+									currentID = parseInt(data.result[0].ID);
+									console.log(zet);
+									saleRep[0].innerHTML = zet;
+									companyList(0,currentID);
+								});
+							});
+						}
+					});
+				});
+			}
+			
+			function getDepartment(id) {
+				fetch('https://crm.corvus.ru/rest/47/wkn05dy055849bbq/user.get/', {
+					method: 'POST',
+					headers: {
+					'Content-Type': 'application/json;charset=utf-8'
+					},
+					body: JSON.stringify({
+						"UF_DEPARTMENT":id
+					})
+				}).then((response) => {
+					console.log(response);
+					response.json().then((data) => {
+						console.log(data.result);
+						for (var i = 0; i < data.result.length; i++) {
+							console.log(data.result[i]);
+							switch(data.result[i].WORK_POSITION) {
+								case "Супервайзер":
+									break;
+								default:
+									zet += '<option value="'+data.result[i].ID+'">'+decodeURIComponent(JSON.parse('"'+data.result[i].NAME+'\u0020'+data.result[i].LAST_NAME+'"'))+'</option>'
+									break;
+							}
+						}
+						console.log(zet);
+						currentID = parseInt(data.result[1].ID);
+						console.log(zet);
+						saleRep[0].innerHTML = zet;
+						companyList(0,currentID);
+					});
+				});
+			}
+		</script>
+	</body>
+</html>

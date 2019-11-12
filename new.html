@@ -1,0 +1,233 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Форма для Торговых Представителей</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<style>
+			/* Style the form */
+			#regForm {
+			  background-color: #fff;
+			  margin: 100px auto;
+			  padding: 40px;
+			  width: 70%;
+			  min-width: 300px;
+			  color: black;
+			  border-top: 10px solid red;
+			  min-width:800px;
+			}
+			.pastQuantity,.pastPrice {width:50px; font-size: 1.2em;}
+			h4 {font-size: 1.2em;}
+			h3 {font-size:1.3em;}
+			.sub td {width:130px; padding-left:10px; min-width:60px; vertical-align:center;}
+			.sub tr:not(:first-of-type) td:nth-of-type(6) {border-left:1px solid red;}
+			body
+			{
+				background-color: lightgray;
+				background-size: contain;
+				background-position: bottom center;
+				background-repeat: no-repeat;
+				font-family: Arial;
+				color: black;
+			}
+			/* Style the input fields */
+			input {
+			  padding: 10px;
+			  width: 100%;
+			  font-size: 17px;
+			  font-family: Raleway;
+			  border: 1px solid #aaaaaa;
+			  border-radius: 10px;
+			}
+			
+			input[type='radio'] {
+				margin:5px;
+			}
+			
+			.tab {border-bottom: 1px solid black; padding-bottom: 10px;}
+			.tab:last-of-type td:not(:first-of-type) {min-width: 100px; width: 20%; text-align:center;}
+			.tab:last-of-type tr:nth-of-type(2) td {text-align: center;}
+			.tab:last-of-type td:first-of-type {min-width: 100px; width: 10%;}
+			.tab:last-of-type tr td:nth-of-type(3) input {margin-left: 10px;}
+			.tab:nth-of-type(3) td:first-of-type {min-width: 200px; text-align: left;}
+			.tab:nth-of-type(3) td {text-align: center;}
+			
+			button {
+				margin-top: 20px;
+				width: 100%;
+				height: 40px;
+				border: none;
+				border-radius: 15px;
+			}
+			
+			#chooseDot {width: 100%;}
+			#chooseDot tr:hover {background-color: lightgray;}
+			#chooseDot tr:first-of-type {font-weight: bold;}
+			#chooseDot tr:first-of-type:hover {
+				background-color: white;
+			}
+			
+			button[onclick='newDot()'] {background:red; font-size: 1.3em; color: white;}
+			#mainbutton {position: fixed; top:0; margin: 1%; width: 13%; vertical-align: center; height: 10%;}
+			#total {text-align: center; font-weight: bold;}
+			#tables tr:first-of-type {font-weight: bold; }
+			#tables td {padding: 10px; font-size: 1.2em; width: 25%; text-align: center;}
+			#tables input {height: 35px;}
+			label, textarea {width:100%;}
+			#textarea {border-top: 1px solid gray; padding-top: 10px; padding-bottom: 20px;}
+			#saleRepresantatives {width: 100%; border-bottom: 1px solid black; margin-bottom: 20px;}
+			#saleRepresantatives td {width: 20%;}
+			#saleRepresantatives select {width:100%; font-size: 1.3em; margin-bottom: 5px;} 
+			
+			@media (orientation: portrait) {
+				#regForm {width: 80%; font-size: 15pt;}
+				#saleRepresantatives {font-size: 15pt;}
+				#regForm input {height: 5%; font-size: 15pt;}
+				#regForm button {height: 5%; width: 100%; font-size: 30pt;}
+				#chooseDot {font-size: 24pt;}
+				#mainbutton {font-size: 2em; padding: 0%; height: 6%!important;;} 
+			}
+		</style>
+	</head>
+	<body>
+	
+		<a href='saleMan.html'>
+			<button type="button" id='mainbutton' class="btn btn-danger btn-lg btn-block">
+				Назад
+			</button>
+		</a>
+		
+		<div id="regForm" >
+
+			<table id="saleRepresantatives" class="tab">
+				<tr>
+					<td>
+						<h4>Торговый Представитель:</h4>
+					</td>
+					<td colspan='4'>
+						<select onchange='dealList(this.value);'>
+						</select>
+					</td>
+				</tr>
+			</table>
+
+			<form class="tab"><h3>Информация о торговой точке:</h3>
+			  <p><input placeholder="Название..." oninput="this.className = ''"></p>
+			  <p><input placeholder="Регион..." oninput="this.className = ''"></p>
+			  <p><input placeholder="Город..." oninput="this.className = ''"></p>
+			  <p><input placeholder="Адрес 1..." oninput="this.className = ''"></p>
+			  <p><input placeholder="Адрес 2..." oninput="this.className = ''"></p>
+			  <p><input placeholder="ФИО 1..." oninput="this.className = ''"></p>
+			  <p><input placeholder="Телефон 1..." oninput="this.className = ''"></p>
+			  <p><input placeholder="ФИО 2..." oninput="this.className = ''"></p>
+			  <p><input placeholder="Телефон 2..." oninput="this.className = ''"></p>
+			  <p>Тип точки: <select>
+				<option value=84>
+					Розница
+				</option>
+				<option value=85>
+					Сеть
+				</option>
+				<option value=86>
+					Сеть с центральным складом
+				</option>
+				<option value=87>
+					Не формат
+				</option>
+			  </select></p>
+			  
+			  <button type='button' onclick='addCompany()'>Подтвердить</button>
+			</form>
+
+		</div>
+		<script src='js/cookie.js'></script>
+		<script>
+			var today = new Date();
+			var year = today.getFullYear();
+			var month = today.getMonth();
+			var date = today.getDate();
+			var phoneCompany = {};
+			var x = document.getElementsByClassName("tab");
+			var d = new Date();
+			var currentID = userID;
+			var saleRep = document.getElementById('saleRepresantatives');
+			var saleChoice = saleRep.getElementsByTagName('select');
+			var url = 'https://ac-amo.ru/corvusform/new.html';
+
+			function accessInfo() {
+				switch(access) {
+					case '0':
+						mng = '76';
+						saleRep.style.display = 'none';
+						dealList(userID);
+						break;
+					case '1':
+						mng = '77';
+						getDepartment(depID);
+						break; 
+				}
+			}
+			
+			function addCompany() {
+				y = x[1].getElementsByTagName("input");
+				v = x[1].getElementsByTagName("select");
+				fetch('https://crm.corvus.ru/rest/47/7i7psg9pzq0nvc4p/crm.company.add/', {
+					method: 'POST',
+					headers: {
+					'Content-Type': 'application/json;charset=utf-8'
+					},
+					body: JSON.stringify({
+					'FIELDS':{
+						'TITLE':y[0].value,
+						'UF_CRM_1571986943685':parseInt(v[0].value,10),
+						'UF_CRM_1570782495391':y[1].value,
+						'UF_CRM_1570782508776':y[2].value,
+						'UF_CRM_1570782547322':y[3].value, 
+						'UF_CRM_1570782558183':y[4].value,
+						'UF_CRM_1570782576476':y[5].value,
+						'UF_CRM_1570782618822':y[6].value,
+						'UF_CRM_1571154547793':y[7].value,
+						'UF_CRM_1571154559289':y[8].value,
+						'ASSIGNED_BY_ID':currentID
+						}
+					})
+				}).then((response) => {
+					console.log(response);
+					response.json().then((data) => {
+						alert('Торговая точка создана!');
+						window.location.reload();
+					});
+				});
+			}
+			
+			function getDepartment(id) {
+				var zet = '';
+				fetch('https://crm.corvus.ru/rest/47/wkn05dy055849bbq/user.get/', {
+					method: 'POST',
+					headers: {
+					'Content-Type': 'application/json;charset=utf-8'
+					},
+					body: JSON.stringify({
+						"UF_DEPARTMENT":id
+					})
+				}).then((response) => {
+					console.log(response);
+					response.json().then((data) => {
+						for (var i = 0; i < data.result.length; i++) {
+							switch(data.result[i].ID) {
+								case userID:
+									break;
+								default:
+									zet += '<option value="'+data.result[i].ID+'">'+decodeURIComponent(JSON.parse('"'+data.result[i].NAME+'\u0020'+data.result[i].LAST_NAME+'"'))+'</option>'
+									break;
+							}
+						}
+						saleChoice[0].innerHTML = zet;
+						currentID = data.result[0].ID;
+					});
+				});
+			}
+			
+			accessInfo();
+		</script>
+	</body>
+</html>

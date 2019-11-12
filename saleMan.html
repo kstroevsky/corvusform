@@ -1,0 +1,189 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Планирование маршрутов</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<style>
+			body {background-color: lightgray;}
+			#interface,#login {display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; width: 50%; background-color: white; border: 5px solid white; border-top: 5px solid red; border-radius: 20px; margin-top: 10%;}
+			#login {margin: auto; margin-top: 10%; text-align: center;}
+			#login form {display: block; width: 80%;}
+			a {margin: 5%;}
+			
+			#login input {margin:5px; display:flex;}
+			a:hover {text-decoration: none;}
+			button {width:250px!important;} 
+			
+			#mainbutton {position: fixed; top:0; margin: 1%; width: 23%!important; vertical-align: center; height: 10%;}
+			
+			@media (orientation: portrait) {
+				#interface {width: 90%; border-top: 15px solid red;}
+				a {width:100%; margin: 5%;}
+				button {margin: auto; height: 100px; width: 500px!important; font-size: 3em!important;}
+				#mainbutton {position: fixed; top:0; margin: 1%; width: 23%!important; vertical-align: center; height: 6%; padding: 0%;} 
+			}
+		</style>
+	</head>
+	<body>
+		
+		<button type="button" id='mainbutton' class="btn btn-danger btn-lg btn-block" onclick='exit()'>
+			Выход
+		</button>
+		
+		<div id='login'>
+			<form>
+				<label>Логин: <input name="login" type='text'></label>
+				<label>Пароль: <input name='password' type='text'></label>
+			
+			</form>
+			
+			<button onclick='login()' type='button'>
+					Войти
+			</button>
+		</div>
+		
+		<div id='interface' class='mx-auto'>
+			<a href='vizit.html'>
+				<button type="button" class="btn btn-primary btn-lg btn-block">Визит</button>
+			</a>
+			<a href='unplanned.html'>
+				<button type="button" class="btn btn-secondary btn-lg btn-block">Незапланированный Визит</button>
+			</a>
+			<a href='new.html'>
+				<button type="button" class="btn btn-primary btn-lg btn-block">Новая точка</button>
+			</a>
+			<a href='plan_SM.html'>
+				<button type="button" class="btn btn-secondary btn-lg btn-block">План</button>
+			</a>
+			<a href='goodEx.html'>
+				<button type="button" class="btn btn-primary btn-lg btn-block">Выдача товара</button>
+			</a>
+			<a href='moneyIn.html'>
+				<button type="button" class="btn btn-primary btn-lg btn-block">Касса</button>
+			</a>
+			<a href='plan_SP.html'>
+				<button type="button" class="btn btn-primary btn-lg btn-block">Составление Плана</button>
+			</a>
+		</div>
+		<script src='js/cookie.js'></script>
+		<script>
+			var interfc = document.getElementById('interface');
+			var mainbutton = document.getElementById('mainbutton');
+			var buttons = interfc.getElementsByTagName('a');
+			var logDiv = document.getElementById('login');
+			var logForm = logDiv.getElementsByTagName("input");
+			
+			function accessInfo() {
+				if (userID) {
+					if (access) {
+						logDiv.style.display = "none";
+						switch(access) {
+							case '0':
+								buttons[4].style.display = 'none';
+								buttons[5].style.display = 'none';
+								buttons[6].style.display = 'none';
+								break;
+							case '1':
+								buttons[3].style.display = 'none';
+								buttons[4].style.display = 'none';
+								buttons[5].style.display = 'none';
+								break;
+							case '2':
+								buttons[0].style.display = 'none';
+								buttons[1].style.display = 'none';
+								buttons[2].style.display = 'none';
+								buttons[3].style.display = 'none';
+								break;
+						}
+					}
+				} else {
+					interfc.style.display = 'none';
+					mainbutton.style.display = 'none';
+				}
+			}
+			
+			accessInfo();
+
+			function login() {
+				var pass = '';
+				for (var i = 0; i < logForm[1].value.length-3; i++) {
+					pass += logForm[1].value[i]; 
+				}
+				pass = parseInt(pass);
+				checkUser(logForm[0].value,pass);
+			}
+			
+			function checkUser(email, id) {
+				fetch('https://crm.corvus.ru/rest/47/wkn05dy055849bbq/user.get/', {
+					method: 'POST',
+					headers: {
+					'Content-Type': 'application/json;charset=utf-8'
+					},
+					body: JSON.stringify({
+						"ID":id
+					})
+				}).then((response) => {
+					console.log(response);
+					response.json().then((data) => {
+						console.log(data.result);
+						console.log(data.result[0].EMAIL);
+						console.log(email);
+						if (data.result[0].EMAIL == email) {
+							var position = decodeURIComponent(JSON.parse('"'+data.result[0].WORK_POSITION+'"'));
+							setCookie('userID',id);
+							console.log(position);
+							switch(position) {
+								case "Дистрибьютор":
+									setCookie('access',2);
+									setCookie('depID',data.result[0].UF_DEPARTMENT);
+									window.location.reload();
+									break;
+								case "Супервайзер":
+									setCookie('access',1);
+									setCookie('depID',data.result[0].UF_DEPARTMENT);
+									getContact(id);
+									break;
+								case "Торговый Представитель":
+									setCookie('access',0);
+									getContact(id);
+									break;
+							}
+							
+						}
+					});
+				});
+			}
+			
+			function getContact(id) {
+				fetch('https://crm.corvus.ru/rest/47/wkn05dy055849bbq/crm.contact.list/', {
+					method: 'POST',
+					headers: {
+					'Content-Type': 'application/json;charset=utf-8'
+					},
+					body: JSON.stringify({
+						filter: {
+							'ASSIGNED_BY_ID': id
+						}
+					})
+				}).then((response) => {
+					console.log(response);
+					response.json().then((data) => {
+						console.log(data.result);
+						if (data.result.length != 0) {
+							setCookie('contactID',data.result[0].ID);
+						}
+						window.location.reload();
+					});
+				});
+			}
+			
+			function exit() {
+				deleteCookie('userID');
+				deleteCookie('access');
+				deleteCookie('depID');
+				deleteCookie('contactID');
+				window.location.href = 'https://ac-amo.ru/corvusform/saleMan.html';
+			}
+		</script>
+	</body>
+</html>
